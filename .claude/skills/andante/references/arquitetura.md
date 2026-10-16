@@ -3,6 +3,7 @@
 Mapa do arquivo por seção (procure pelos comentários `# ---------- ... ----------`).
 
 ## 1. Interface visual (topo do arquivo)
+- `logo_ascii()` (blocos), `largura_tela()` (60–90 col), `secao(titulo, cor, grossa)`, `visivel()` (tira cores), `colunas(itens)` (2 colunas, sem emoji), `fmt_num()` (12,3K · 4,5M)
 - Cores ANSI: `BR RD GN YW BL MG CY WT RESET DIM BOLD`
 - `logo_ascii()`, `borda_titulo()`, `linha_sep()`, `destaque()`, `dim_texto()`, `info_box()`
 - `animar_batalha(jogador, inimigo, delay)` — slider lateral; usa `time.sleep` (lento: ~13×delay)
@@ -15,14 +16,16 @@ Mapa do arquivo por seção (procure pelos comentários `# ---------- ... ------
 
 ## 3. Modo Idle
 - `LeitorTecla` — context manager; `ler()` devolve a tecla ou `None` sem travar (msvcrt / termios+select)
-- Constantes: `VELOCIDADES`, `AUTO_SALVAR_A_CADA`, `OFFLINE_MAX_MIN`, `RITMO_XP`
+- Constantes: `VELOCIDADES`, `AUTO_SALVAR_A_CADA`, `OFFLINE_MAX_MIN`, `OFFLINE_EFICIENCIA`, `RITMO_XP`, `NIVEIS_POR_VOLTA`; curva de XP em `xp_para_nivel(n)` = 35·n^2,7
 - `EVENTOS_AUTO` — `(tipo, peso, objeto)`: Batalha 0.4, Item 0.2, Ouro 0.2, Diálogo 0.1, Trabalho 0.1
 - `nivel_requerido(j)` = `req_nivel + 10*(ciclo-1)`; `requisitos_ok(j)`
 - `luta_auto(j, vida, atq)` → `(venceu, dano)` — luta sem input, usa Bola de Fogo e poções
-- `tick_idle(j, res, log)` — um passo: regen, auto-distribuir pontos, chefe, evento de história, evento aleatório
+- `novo_res()` — dict da sessão (`ticks, batalhas, chefes, chefes_tentados, compras, destaque, inicio, ...`)
+- `tick_idle(j, res, log)` — um passo (+ chance de passo extra pelas Botas) → `_tick_idle`: regen, pontos, conquistas, auto-compra, chefe (com `espera_chefe` após derrota), história, evento (`Batalha, Item, Ouro, Diálogo, Trabalho, Encontro`)
+- `desenhar_idle()` — painel: status, torre (`_linha_torre`), Poder (`_cor_poder`), rumo ao chefe (`_rumo_ao_chefe`), Forja (`_resumo_forja`), destaque ★, log de 7 linhas
 - `desenhar_idle(...)` — painel redesenhado com `[H[J`
 - `auto_play(j, passos=None, velocidade=1.0, desenhar=True)` → `res` (`ticks, batalhas, chefes, chefes_tentados, itens, ouro_ganho, xp_ganho, eventos, mortes`). Testes: `velocidade=0, desenhar=False`.
-- `progresso_offline(j, segundos)` → `(minutos, xp, ouro, niveis)` ou `None`
+- `progresso_offline(j, segundos)` → dict `{minutos, xp, ouro, niveis, compras, eficiencia, limitado}` ou `None`; `eficiencia_offline()`, `limite_offline_min()` (Altar: Eco do Andante)
 
 ## 4. Magia
 - `FEITICOS` — `{nome: {custo_mana, dano|cura|def_bonus|atq_bonus, duracao, mana_regen, desc}}`
@@ -43,7 +46,7 @@ Mapa do arquivo por seção (procure pelos comentários `# ---------- ... ------
 - `aplicar_passivas()` — só efeitos por turno (Regeneração, Invocação Rápida)
 - `dialogo_bom()` — conta conversas positivas (3 → `dialogo_positivo_3`)
 - `usar_magia()` — Bola de Fogo guarda `ultimo_dano` (o combate aplica); Escudo/Impulso só ligam contadores
-- `ganhar_xp(qt, silencioso)` sobe vários níveis de uma vez → `subir_nivel()` (xp_max = 100*nivel, +2 pontos, restaura vida/mana)
+- `ganhar_xp(qt, silencioso)` sobe vários níveis de uma vez → `subir_nivel()` (xp_max = `xp_para_nivel(nivel)`, +2 pontos, restaura vida/mana)
 - `escala()` = 1 + 0.5*(ciclo-1); `aplicar_flags_de_progresso()` marca flags dos chefes já passados
 - `usar_poção()`, `adicionar_item()`, `distribuir_pontos()`
 
@@ -65,6 +68,13 @@ Mapa do arquivo por seção (procure pelos comentários `# ---------- ... ------
 ## 7. Combate
 - `combate(jogador, nome, vida_inimigo, atq_inimigo)` → `True` (vitória) / `False` (fuga/derrota). Mana regenera por turno; Escudo/Impulso/Defender valem só no turno.
 
+## 7a. Economia
+- `FORJA` + `custo_forja`, `comprar_forja`, `auto_comprar`, `forja_no_maximo`
+- `ALTAR` + `custo_altar`, `comprar_altar`; `FRAGMENTOS_CHEFE`/`FRAGMENTOS_REI` (dados em `vencer_chefe`)
+- `LIMITE_ITEM`, `PRECO_ITEM`, `PRECO_TROFEU`; `guardar_item()`, `vender_excesso()`
+- No `Jogador`: `forja`, `altar`, `fragmentos`, `auto_compra`, `espera_chefe`; `mult_dano()`, `dano_fogo()`, `dano_por_turno()`, `mult_ouro()`, `mult_xp()`, `ganhar_ouro()`
+- Força dos inimigos: `CHEFE_VIDA`, `CHEFE_ATQ`, `CHEFE_POR_VOLTA`, `MONSTRO_VIDA`, `MONSTRO_ATQ`; `stats_chefe()`, `stats_monstro()`, `poder_contra()`
+
 ## 7b. Conquistas / Títulos
 - `CONQUISTAS_DEF` (8, por flags ou volta), `TITULOS_DEF` (5, conquista + nível)
 - `checar_conquistas(j)` → linhas; chamado no menu e a cada tick do idle; escolhe o melhor título
@@ -80,8 +90,11 @@ Mapa do arquivo por seção (procure pelos comentários `# ---------- ... ------
 ## 9. Save / Load
 `texto_save`, `gravar_save`, `ler_save` (único parser), `auto_salvar`, `salvar_man`, `carregar_man`, `mostrar_offline`. Ver `save.md`.
 
+## 9b. Telas
+- `tela_forja()`, `tela_altar()`, `mostrar_status()`, `tela_menu()` (cartão + opções + `dica_do_menu()`), `resumo_idle()`, `mostrar_offline()` (quadro)
+
 ## 10. Menu
-- `menu()` — se há auto save, pergunta "Continuar?" e aplica progresso offline; senão `criar_personagem()`. Loop 1-9, `auto_salvar()` a cada volta.
+- `menu(iniciar_idle)` — `--idle` na linha de comando vai direto ao idle; se há auto save, pergunta "Continuar?" e aplica progresso offline; senão `criar_personagem()`. Loop 1-9, `auto_salvar()` a cada volta.
 
 ## Problemas conhecidos
 Lista completa e atualizada: seção "Problemas encontrados na revisão" do `docs/DOCUMENTACAO.md`. Ao corrigir um item, marque `[x]` lá.

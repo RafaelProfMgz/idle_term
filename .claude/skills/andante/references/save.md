@@ -21,6 +21,13 @@ Ouro: 230
 Pontos: 0
 Atributos: F=12 D=10 I=10 V=12 C=10
 Passivas: Regeneração
+Conquistas: Primeiro Sangue, Pescador Amigo
+Titulo: Aventurier
+Conversas: 1
+Fragmentos: 3
+Forja: arma=5 armadura=4 coracao=3 sorte=2 estudo=1 botas=0
+Altar: ancestral=1 ganancia=0 sabedoria=0 eco=0
+AutoCompra: sim
 UltimoAcesso: 1792175855
 
 ## Flags
@@ -37,8 +44,9 @@ UltimoAcesso: 1792175855
 - Demais linhas: `Chave: valor`. `Nivel` e `Nível` são aceitos; `Vida: 120/165` também (pega o número antes da `/`).
 - Chave ausente ou valor inválido → mantém o padrão (não quebra o load).
 - `Andar` é limitado a 1–5. `Classe` define os feitiços (`FEITICOS_CLASSE`).
-- Depois de ler: `xp_max = 100*nivel`, `_recalcular()`, `_desbloquear_passivas()`, `aplicar_flags_de_progresso()` (quem está no Andar 3 ganha as flags dos chefes 1 e 2).
+- Depois de ler: `xp_max = xp_para_nivel(nivel)`, `_recalcular()`, `_desbloquear_passivas()`, `aplicar_flags_de_progresso()` (quem está no Andar 3 ganha as flags dos chefes 1 e 2).
 - `UltimoAcesso` (epoch) alimenta o progresso offline ao reabrir o jogo.
+- Save sem `Fragmentos` (anterior ao Altar) recebe os fragmentos dos chefes já vencidos.
 
 ## Ao estender
 1. **Adicione** chaves novas em `texto_save()` e um ramo em `ler_save()`; não renomeie as existentes (saves antigos continuam válidos).

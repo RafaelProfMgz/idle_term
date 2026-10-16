@@ -23,12 +23,15 @@ python3 andante.py
 - Adicionar itens no bloco `## Inventário` (`- Poção de Vida: 3`)
 - Saves ficam sempre ao lado do `andante.py`
 - Carregar pela opção `8` no menu
+- Também salvos: `Forja: arma=3 ...`, `Altar: ...`, `Fragmentos: N`, `AutoCompra: sim`
 
 ## Funcionalidades chave
 - Andares 1-5 (Porto, Castelo, Caverna, Templo, Abismo)
 - **Jogo idle**: opção 3 roda sem parar (Q sai, +/- velocidade), luta chefes, sobe andares, voltas na torre; progresso offline ao reabrir
 - Magia D&D — Mana = 20 + Int×10 + Nível×5 + Andar×3 (+classe); feitiços: Bola de Fogo, Cura, Escudo Arcano, Impulso, Restauração
 - Passivas — desbloqueadas por nível/atributos; conquistas (8) e títulos com bônus
+- Forja `F` (ouro → melhorias, auto-compra no idle) e Altar `A` (fragmentos dos chefes → bônus permanentes)
+- `andante --idle` abre direto no idle
 - Explorar (opção 1) — cena do andar atual com diálogos de escolha (Pescador, Guardião, Templo)
 - Recompensas de chefe — itens únicos por andar
 - Mapa ASCII (torre vertical)

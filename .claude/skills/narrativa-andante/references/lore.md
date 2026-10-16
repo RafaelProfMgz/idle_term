@@ -23,6 +23,8 @@
 
 **Itens**: Poção de Vida, Crista Azul, Chave do Castelo, Manuscrito Antigo + recompensas dos chefes.
 
+**Lugares/pessoas novos (v2)**: o **ferreiro** da Forja do Porto ("Ouro primeiro, conversa depois."), o **Altar dos Fragmentos** (fragmentos da torre caem dos chefes), encontros: mercador ambulante, viajante ferido, corvo, três esqueletos jogando dados, a padeira do porto.
+
 **Feitiços**: Bola de Fogo, Cura, Escudo Arcano, Impulso, Restauração.
 
 **Flags**: `pescador_falado, goblin_derrotado, crista_pegada, portao_aberto, manuscrito_lido, dragao_derrotado, dialogo_positivo_3`.

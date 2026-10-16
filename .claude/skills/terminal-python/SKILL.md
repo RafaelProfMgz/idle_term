@@ -53,6 +53,9 @@ Formato do save: ver `.claude/skills/andante/references/save.md`.
 
 ## Comando global `andante`
 
+`andante --idle` abre direto no modo idle; `andante --help` mostra as opções.
+
+
 Já existe `~/.local/bin/andante`:
 ```bash
 #!/bin/bash

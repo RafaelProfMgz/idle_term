@@ -46,6 +46,8 @@ def dialogo_guardiao(jogador):
 
 ## Eventos curtos do modo idle
 
+Onde ficam: `FALAS_IDLE[andar]` (8 por andar, ambiente), `TRABALHOS[andar]` (1 por andar), `ENCONTROS` (raros, com `ouro`/`xp` por andar ou `cura` em % da vida). Comece cada linha com um emoji e mantenha ≤ 70 colunas — o painel mostra 7 linhas.
+
 O modo idle mostra uma linha por evento (painel com os 8 últimos). Escreva variações em lista e sorteie com `random.choice`, para o idle não ficar repetitivo:
 
 ```python
