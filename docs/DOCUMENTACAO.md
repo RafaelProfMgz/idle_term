@@ -1,13 +1,8 @@
 # DOCUMENTACAO.md — Histórico + Planos do RPG
 
 ## Versões
-- `jogo_texto.py` — jogo básico de texto (criado inicial)
-- `rpg_big.py` — RPG maior com save Markdown (.txt estilo GitHub)
-- `rpg_causa_efeito.py` — causa/consequência com flags e missões
-- `rpg_full.py` — expansão: classes, atributos, nível, conquistas, títulos, mapa ASCII, diálogos
 - `andante.py` — **versão atual**: jogo idle de terminal (andares, modo idle contínuo, progresso offline, magia, passivas, conquistas, títulos)
-- `interface_colors.py` — tabela de cores ANSI avulsa; **não é usada** pelo `andante.py` (ele define as próprias cores)
-- Os arquivos `jogo_texto.py`, `rpg_*.py` são versões antigas, mantidas como histórico (compilam, não são mais mantidas)
+- Versões antigas (`jogo_texto.py`, `rpg_big.py`, `rpg_causa_efeito.py`, `rpg_full.py`, `interface_colors.py`) foram removidas em 2026-10-16 — continuam no histórico do git (commit `7b2f113` e anteriores)
 
 ## O que está implementado (lista completa)
 1. **Andares (1-5)**: Porto, Castelo, Caverna, Templo, Abismo — cada um com chefe, requisitos de nível/flag, recompensa de item único
@@ -74,6 +69,6 @@ Estrutura em `.claude/skills/<nome>/SKILL.md` com frontmatter YAML (`name`, `des
 - [x] `desenhar_torre()` marca chefes derrotados pelas flags erradas
 - [x] Conquistas, títulos com bônus e `CONQUISTAS_DEF` (citados na doc) não existiam no `andante.py`
 - [x] "Explorar" sempre abria o Porto, qualquer que fosse o andar
-- [x] `interface_colors.py` não é usado — documentado em "Versões"
-- [ ] `docs/PLANOS_E_HISTORICO.md` é uma cópia antiga deste arquivo (cita `rpg_idle_andar.py` e o Auto Play que parava) — **aguardando decisão: apagar?**
+- [x] `interface_colors.py` não era usado — removido
+- [x] `docs/PLANOS_E_HISTORICO.md` era uma cópia antiga deste arquivo — removido
 - [x] (achado no teste) Modo idle perdia teclas apertadas rápido (`sys.stdin.read(1)` + `select`) — agora lê direto do descritor
