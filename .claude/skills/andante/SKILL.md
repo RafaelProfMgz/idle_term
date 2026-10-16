@@ -1,36 +1,39 @@
 ---
 name: andante
-description: Desenvolvimento do RPG de terminal Andante (andante.py) — andares, chefes, Auto Play/idle, magia (FEITICOS), passivas, combate, classes, save .txt editável e mapa ASCII da torre. Use SEMPRE que o usuário pedir para criar, mudar, corrigir ou balancear qualquer coisa do jogo (ex. "adiciona um andar 6", "cria uma passiva nova", "o auto play não para no chefe", "mexe no save", "nova magia", "loja no Porto"), mesmo que ele não diga "andante". Para textos/diálogos/lore use também narrativa-andante; para comandos de terminal use terminal-python.
+description: Desenvolvimento do jogo idle de terminal Andante (andante.py) — modo idle contínuo, progresso offline, andares, chefes, voltas na torre, magia (FEITICOS), passivas, combate, classes, save .txt editável e mapa ASCII da torre. Use SEMPRE que o usuário pedir para criar, mudar, corrigir ou balancear qualquer coisa do jogo (ex. "adiciona um andar 6", "cria uma passiva nova", "o auto play não para no chefe", "mexe no save", "nova magia", "loja no Porto"), mesmo que ele não diga "andante". Para textos/diálogos/lore use também narrativa-andante; para comandos de terminal use terminal-python.
 ---
 
 # Andante — desenvolvimento do jogo
 
-Andante é um RPG de texto em **um único arquivo** (`andante.py`, ~700 linhas, só biblioteca padrão) que roda em Linux e Windows. O usuário joga pelo comando global `andante` (`~/.local/bin/andante` → `python3 /home/angel/Documentos/terminal/andante.py`).
+Andante é um **jogo idle de terminal** em **um único arquivo** (`andante.py`, ~950 linhas, só biblioteca padrão) que roda em Linux e Windows. O usuário joga pelo comando global `andante` (`~/.local/bin/andante` → `python3 /home/angel/Documentos/terminal/andante.py`).
 
 ## Antes de editar
 
 1. Leia a parte do `andante.py` que vai mudar — o código muda com frequência e a documentação às vezes está atrasada em relação a ele. Se doc e código discordarem, **o código vale**; avise o usuário sobre a divergência.
 2. Consulte `references/arquitetura.md` para saber onde cada sistema mora (funções, dicts, fórmulas).
-3. Se a mudança envolve save, leia `references/save.md` — o formato real é `Chave:valor`, não o Markdown com checkboxes que o CLAUDE.md descreve.
+3. Se a mudança envolve save, leia `references/save.md`.
 
 ## Como fazer mudanças comuns
 
 | Pedido | Onde mexer | Cuidados |
 |---|---|---|
-| Novo andar | `ANDARES` + `desenhar_torre()` (loop `range(5,0,-1)` e `chefe_ok`) + `combate()` (`jogador.andar < 5`) | O número 5 está fixo em vários lugares — procure com `grep -n "5" andante.py` perto de andar |
-| Nova passiva | `_desbloquear_passivas()` (condição) + `aplicar_passivas()` (efeito) | Verifique se o nome já existe antes de duplicar |
+| Novo andar | `ANDARES` + `CHEFE_FLAGS` + `MONSTROS` + `FALAS_IDLE` + `vencer_chefe()` (`n < 5`) + `desenhar_torre()` + `ler_save()` (`min(5, ...)`) | O número 5 está fixo em vários lugares — `grep -n "5" andante.py` |
+| Nova passiva | `_desbloquear_passivas()` (condição) + `PASSIVAS_BONUS` (ATQ/DEF fixo) ou `aplicar_passivas()` (efeito por turno) | Verifique se o nome já existe antes de duplicar |
 | Novo feitiço | `FEITICOS` + ramo `elif nome ==` em `usar_magia()` + `feiticos_aprendidos` da classe | Custo de mana deve caber em `mana_max` do nível 1 |
-| Nova flag de causa/consequência | `self.flags` no `__init__` + onde ela vira `True` + `req_flag` se travar andar | Flags hoje **não são salvas** — veja `references/save.md` |
-| Nova cena/NPC | função `cena_*` no estilo de `cena_porto()` + entrada no menu | Texto/diálogo: siga a skill `narrativa-andante` |
-| Balanceamento | `_recalcular()`, `combate()`, `cena_chefe()` (vida/atq do chefe por andar) | Rode a simulação depois (ver abaixo) |
+| Nova flag de causa/consequência | `self.flags` no `__init__` + onde ela vira `True` (`CHEFE_FLAGS` ou `HISTORIA`) + `req_flag` se travar andar | Se travar andar, o idle precisa conseguir ativá-la sozinho |
+| Ritmo do idle | `RITMO_XP`, `stats_chefe()`, `nivel_requerido()`, `Jogador.escala()` | Meça com uma simulação de `tick_idle()` antes/depois |
+| Nova cena/NPC | `CENAS[andar]` + função `dialogo_*` chamada em `cena_explorar()` | Texto/diálogo: siga a skill `narrativa-andante` |
+| Balanceamento | `CLASSES`, `_recalcular()`, `combate()`, `stats_chefe()`, `TITULOS_DEF` |
+| Conquista/título | `CONQUISTAS_DEF` / `TITULOS_DEF` (salvos automaticamente) | Rode a simulação depois (ver abaixo) |
 
 ## Regras do projeto (e por quê)
 
 - **Só biblioteca padrão** (`os, sys, time, re, random`). O jogo é distribuído como um arquivo solto; dependência externa quebraria o `andante` global.
-- **Cross-platform**: limpar tela com `os.name == 'nt'`; abrir arquivos com `encoding="utf-8"` (no Windows o padrão não é UTF-8 e os acentos quebram).
+- **Cross-platform**: limpar tela com `os.name == 'nt'`; abrir arquivos com `encoding="utf-8"` (no Windows o padrão não é UTF-8 e os acentos quebram); nada de aspas duplas dentro de f-string com aspas duplas (só funciona no Python 3.12+).
 - **Save legível por humanos**: o usuário edita o `.txt` à mão. Nunca troque para JSON/pickle no save principal; um `export_json()` extra é ok.
-- **Auto Play com `ate_chefe`** deve parar assim que `nivel >= req_nivel` e a `req_flag` estiver ativa.
-- **Passivas** são aplicadas via `aplicar_passivas()` no início de cada turno de `combate()`.
+- **É um jogo idle**: o modo idle (`auto_play`) **nunca para sozinho** — só com `Q`/Ctrl+C. Ele luta chefes, sobe andares e recomeça a torre (voltas) por conta própria. Nada pode exigir input do jogador para o idle progredir.
+- **Teclas sem travar** via `LeitorTecla` (msvcrt no Windows, termios+select no Linux). Não use bibliotecas como `keyboard`/`curses` (curses não vem no Windows).
+- **Status nunca acumulam**: tudo que é permanente entra em `_recalcular()`; buffs de combate valem só por turnos e zeram ao fim da luta.
 - **Recompensa de chefe** vai para o inventário e está declarada em `ANDARES[n]["recompensa"]`.
 - Mantenha o estilo do código: nomes em português, `digitar()` para texto narrativo, `print()` para menus, emojis com tag entre colchetes (`[👑 CHEFE DERROTADO!]`).
 
@@ -38,11 +41,12 @@ Andante é um RPG de texto em **um único arquivo** (`andante.py`, ~700 linhas, 
 
 ```bash
 python3 -m py_compile andante.py                      # sintaxe
-python3 .claude/skills/andante/scripts/smoke_test.py  # cria personagens, roda auto play, magia, save/load sem interação
+python3 .claude/skills/andante/scripts/smoke_test.py  # cria personagens, roda o idle, magia, save/load sem interação
+python3 .claude/skills/andante/scripts/regressao.py  # um teste por bug já corrigido (docs/DOCUMENTACAO.md)
 ```
 
-O `smoke_test.py` roda em pasta temporária (não toca nos saves do usuário) e desliga as animações. Se você criou um sistema novo, acrescente uma checagem nele.
+O `smoke_test.py` roda em pasta temporária (não toca nos saves do usuário) e desliga as animações. Se você criou um sistema novo, acrescente uma checagem no smoke test; se corrigiu um bug, acrescente um item no `regressao.py` e marque `[x]` no `docs/DOCUMENTACAO.md`.
 
 ## Documentação
 
-Ao criar sistema novo: atualize `DOCUMENTACAO.md` (lista "O que está implementado" e marque o item nos "Planos futuros") e, se mudar regras/arquivos, o `CLAUDE.md` da raiz.
+Ao criar sistema novo: atualize `docs/DOCUMENTACAO.md` (lista "O que está implementado" e marque o item nos "Planos futuros") e, se mudar regras/arquivos, o `CLAUDE.md` da raiz.

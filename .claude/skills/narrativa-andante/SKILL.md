@@ -1,6 +1,6 @@
 ---
 name: narrativa-andante
-description: Escrita narrativa para o RPG Andante — lore da torre e dos 5 andares, NPCs, diálogos com escolhas, missões, descrições de cena, falas de chefe, nomes de itens/feitiços/passivas e eventos do Auto Play, sempre ligados a flags de causa/consequência. Use quando o usuário pedir história, diálogo, texto, NPC novo, missão, lore, fala de chefe, descrição de andar, nome de item, evento aleatório ou "deixa o jogo mais imersivo", mesmo que não peça explicitamente "narrativa". Junto com a skill andante quando o texto for entrar no código.
+description: Escrita narrativa para o RPG Andante — lore da torre e dos 5 andares, NPCs, diálogos com escolhas, missões, descrições de cena, falas de chefe, nomes de itens/feitiços/passivas e eventos do modo idle, sempre ligados a flags de causa/consequência. Use quando o usuário pedir história, diálogo, texto, NPC novo, missão, lore, fala de chefe, descrição de andar, nome de item, evento aleatório ou "deixa o jogo mais imersivo", mesmo que não peça explicitamente "narrativa". Junto com a skill andante quando o texto for entrar no código.
 ---
 
 # Narrativa do Andante

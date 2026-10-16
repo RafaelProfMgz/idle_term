@@ -14,7 +14,10 @@
 
 **Personagens**
 - **Pescador** (Porto): pede ajuda, ativa a missão *"O Mar Escuro"* e entrega **Chave do Castelo** e **Manuscrito Antigo**. Frase atual: *"Se você me ajudar, te darei o caminho."*
-- **Guardião** (Castelo): descrito na documentação — aceita suborno com o manuscrito, combate ou deixa passar (diálogo ainda não implementado em `andante.py`; existia em `rpg_full.py`).
+- **Guardião** (Castelo): "Ninguém passa sem ordem do Rei. E o Rei não dá ordens há anos." Reconhece a letra do Rei no Manuscrito e deixa passar sem lutar; ou é desafiado (é o chefe Guardião Real).
+- **Pescador** também responde sobre a torre: "Dizem que quem sobe a torre desce ao fundo do mar. Eu só sei que ninguém voltou."
+- **Manuscrito** (Templo): a tinta reaparece à luz das velas; é um mapa da escada até o Cumulador.
+- **Voltas**: depois do Rei das Sombras "a torre gira" e o andante recomeça no Porto, mais forte (Volta 2, 3...).
 
 **Classes**: Guerreiro, Mago, Arqueiro. **Títulos**: Aventurier, Caçador de Sombras, Guardião do Rei, Matador de Dragões, Lenda do Porto.
 
@@ -28,9 +31,9 @@
 
 - O que é *"O Mar Escuro"*? A missão é ativada mas nunca concluída.
 - Por que um pescador tem a chave do castelo e um manuscrito antigo?
-- `portao_aberto`, `manuscrito_lido` e `dragao_derrotado` não são ativadas em nenhum lugar do `andante.py` — do andar 3 em diante o jogo fica travado. Precisam de cena (Castelo/Guardião, leitura do manuscrito).
+- Por que a torre "gira" depois do Rei das Sombras? (mecânica de voltas existe, falta explicação)
 - "Cumulador" (chefe do Templo) não tem descrição. Algo que acumula — oferendas? memórias? almas dos que subiram?
-- Templo e Abismo não têm NPCs (está nos planos do usuário).
+- Caverna, Templo e Abismo não têm NPCs com escolha — só ações/falas de ambiente (está nos planos do usuário).
 - Crista Azul vs Crista do Goblin: dois itens parecidos; vale explicar a diferença ou unificar.
 - O Rei das Sombras tem relação com o Rei do Castelo?
 

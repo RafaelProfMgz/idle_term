@@ -24,7 +24,7 @@
 - Context manager `with open("f","r") as f:` (fecha automaticamente)
 - `try / except / finally`
 - `re.search(r"padrão", texto)` para extrair de arquivos `.txt`
-- `random.choices(lista, weights=[...], k=1)` — escolha ponderada (usado no Auto Play)
+- `random.choices(lista, weights=[...], k=1)` — escolha ponderada (usado no modo idle)
 - `os.system('cls' if os.name == 'nt' else 'clear')` — limpeza cross-platform
 - `time.sleep(0.01)` — delay simples para efeito digitação
 - `sys.stdout.write(ch); sys.stdout.flush()` — impressão caractere a caractere
@@ -34,4 +34,6 @@
 - Rodar jogo: `python3 andante.py`
 - Verificar sintaxe: `python3 -m py_compile andante.py`
 - Editar save: `nano save_idle.txt`
-- Auto save: `python3 -c "import andante as r; j=r.Jogador(); r.auto_play(j, passos=10)"`
+- Testar o jogo inteiro: `python3 .claude/skills/andante/scripts/smoke_test.py`
+- Simular 100 passos de idle sem tela: `python3 -c "import andante as a; j=a.Jogador('T','Mago'); print(a.auto_play(j, passos=100, velocidade=0, desenhar=False))"`
+- Ler tecla sem travar (Linux): `select.select([fd],[],[],0)` + `os.read(fd, 64)` — não use `sys.stdin.read(1)` (o buffer esconde teclas do select)

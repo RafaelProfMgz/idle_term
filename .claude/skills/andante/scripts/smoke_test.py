@@ -41,15 +41,36 @@ try:
         for f in j.feiticos_aprendidos:
             resultados[classe + ":" + f] = j.usar_magia(f)
 
+    # Saves do teste ficam na pasta temporária
+    a.SAVE_MANUAL = os.path.abspath("save_idle.txt")
+    a.SAVE_AUTO = os.path.abspath("save_auto_idle.txt")
+
     j = a.Jogador("Idle", "Guerreiro", 1)
-    res = a.auto_play(j, passos=30)
-    res_chefe = a.auto_play(a.Jogador("Chefe", "Mago", 1), passos=500, ate_chefe=True)
+    res = a.auto_play(j, passos=30, velocidade=0, desenhar=False)
+
+    # Idle sem parar: deve atravessar os 5 andares e começar a volta 2
+    viajante = {}
+    for classe in ("Guerreiro", "Mago", "Arqueiro"):
+        t = a.Jogador("Torre", classe, 1)
+        r = a.auto_play(t, passos=20000, velocidade=0, desenhar=False)
+        viajante[classe] = (t.ciclo, t.andar, t.nivel, r["ticks"], r["chefes"])
 
     j.nivel, j.andar, j.xp = 4, 2, 37
+    j.flags["pescador_falado"] = True
+    j.adicionar_item("Escama do Dragão", 3)
     a.salvar_man(j)
     j2 = a.Jogador("Load", "Guerreiro", 1)
     carregou = a.carregar_man(j2)
     a.auto_salvar(j)
+
+    # Progresso offline (2h fora)
+    off = a.Jogador("Off", "Arqueiro", 1)
+    ganho_off = a.progresso_offline(off, 2 * 3600)
+
+    # Chefe do Andar 5 não pode levar a um Andar 6 inexistente
+    fim = a.Jogador("Fim", "Guerreiro", 5)
+    a.vencer_chefe(fim)
+    a.desenhar_torre(fim)
     erro = None
 except Exception as e:  # noqa: BLE001
     import traceback; erro = traceback.format_exc()
@@ -64,13 +85,19 @@ if erro is None:
         checar(f"{classe}: vida/mana positivas", vmax > 0 and mmax > 0)
         for f in feit:
             checar(f"{classe}: lança {f}", resultados[classe + ":" + f] is True)
-    checar("auto_play retorna dict com 'batalhas'", isinstance(res, dict) and "batalhas" in res)
-    checar("auto_play ate_chefe para nos requisitos", res_chefe.get("parou_chefe") is True)
+    checar("idle roda exatamente os passos pedidos (não para sozinho)", res.get("ticks") == 30, str(res))
+    for classe, (ciclo, andar, nivel, ticks, chefes) in viajante.items():
+        checar(f"idle {classe}: completa a torre e inicia a volta 2", ciclo >= 2,
+               f"volta={ciclo} andar={andar} nivel={nivel} chefes={chefes}")
+        print(f"         ({classe}: volta {ciclo}, andar {andar}, nível {nivel}, {chefes} chefes em {ticks} ticks)")
     checar("ANDARES tem chefes e recompensas", all("chefe" in v and "recompensa" in v for v in a.ANDARES.values()))
     checar("save manual criado", os.path.exists(a.SAVE_MANUAL))
     checar("save manual carregado (Andar/Nivel/XP)", carregou and (j2.andar, j2.nivel, j2.xp) == (2, 4, 37),
            f"obtido andar={j2.andar} nivel={j2.nivel} xp={j2.xp}")
+    checar("save restaura flags e inventário", j2.flags.get("pescador_falado") and j2.inven.get("Escama do Dragão") == 3)
     checar("auto save criado", os.path.exists(a.SAVE_AUTO))
+    checar("progresso offline dá XP e ouro", ganho_off is not None and ganho_off[1] > 0 and ganho_off[2] > 0, str(ganho_off))
+    checar("vencer Andar 5 inicia volta 2 no Andar 1", (fim.ciclo, fim.andar) == (2, 1), f"volta={fim.ciclo} andar={fim.andar}")
 
 print("\nRESULTADO:", "OK" if not falhas else f"{len(falhas)} falha(s)")
 sys.exit(1 if falhas else 0)
