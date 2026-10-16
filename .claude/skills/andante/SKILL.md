@@ -23,7 +23,9 @@ Andante é um **jogo idle de terminal** em **um único arquivo** (`andante.py`, 
 | Nova flag de causa/consequência | `self.flags` no `__init__` + onde ela vira `True` (`CHEFE_FLAGS` ou `HISTORIA`) + `req_flag` se travar andar | Se travar andar, o idle precisa conseguir ativá-la sozinho |
 | Ritmo do idle | `xp_para_nivel()`, `RITMO_XP`, `NIVEIS_POR_VOLTA`, `OFFLINE_EFICIENCIA`, `stats_chefe()`, `Jogador.escala()` | Meça antes/depois com `scripts/ritmo.py`; meta: nível 5 em ~2-3 min, 1ª volta ~25-30 min, cada volta ~1,5× a anterior |
 | Nova cena/NPC | `CENAS[andar]` + função `dialogo_*` chamada em `cena_explorar()` | Texto/diálogo: siga a skill `narrativa-andante` |
-| Balanceamento | `CLASSES`, `_recalcular()`, `combate()`, `stats_chefe()`, `TITULOS_DEF` |
+| Balanceamento | `CLASSES`, `_recalcular()`, `CHEFE_VIDA/ATQ/POR_VOLTA`, `MONSTRO_*`, `FORJA` (custos), `ALTAR`, `TITULOS_DEF` | Rode `scripts/ritmo.py`: as 3 classes devem ter voltas parecidas e poucas derrotas para chefe (sem muralha) |
+| Nova melhoria de Forja/Altar | entrada em `FORJA`/`ALTAR` + efeito em `_recalcular()` / `mult_ouro()` / `mult_xp()` / `mult_dano()` | Salva sozinho (`Forja:`/`Altar:` no save) |
+| Tela/menu | `secao()`, `colunas()`, `barra()`, `fmt_num()`; nada de emoji dentro de `colunas()` | Telas de menu usam `print` (instantâneo); `digitar()` só para narrativa |
 | Conquista/título | `CONQUISTAS_DEF` / `TITULOS_DEF` (salvos automaticamente) | Rode a simulação depois (ver abaixo) |
 
 ## Regras do projeto (e por quê)

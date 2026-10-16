@@ -71,6 +71,24 @@ try:
     fim = a.Jogador("Fim", "Guerreiro", 5)
     a.vencer_chefe(fim)
     a.desenhar_torre(fim)
+
+    # Forja, tralhas, Altar e o save desses campos
+    fj = a.Jogador("Forja", "Guerreiro", 1); atq0 = fj.atq; fj.ouro = 10**6
+    comprou = a.comprar_forja(fj, "arma")
+    fj.adicionar_item("Poção de Vida", 50); venda = a.vender_excesso(fj)
+    fj.fragmentos = 10; altar_ok = a.comprar_altar(fj, "ancestral")
+    fj.auto_compra = False
+    a.gravar_save(fj, a.SAVE_AUTO, "t"); f2 = a.Jogador("x", "Mago", 1); a.ler_save(f2, a.SAVE_AUTO)
+
+    # Todas as telas desenham sem erro
+    telas_ok = True
+    try:
+        r0 = a.novo_res(); a.desenhar_idle(fj, r0, ["teste"], 1.0)
+        a.tela_menu(fj); a.mostrar_status(fj); a.dica_do_menu(fj)
+        builtins.input = lambda *_: "0"; a.tela_forja(fj); a.tela_altar(fj)
+        a.mostrar_offline(fj, int(time.time()) - 3 * 3600)
+    except Exception:
+        import traceback; telas_ok = traceback.format_exc()
     erro = None
 except Exception as e:  # noqa: BLE001
     import traceback; erro = traceback.format_exc()
@@ -96,8 +114,14 @@ if erro is None:
            f"obtido andar={j2.andar} nivel={j2.nivel} xp={j2.xp}")
     checar("save restaura flags e inventário", j2.flags.get("pescador_falado") and j2.inven.get("Escama do Dragão") == 3)
     checar("auto save criado", os.path.exists(a.SAVE_AUTO))
-    checar("progresso offline dá XP e ouro", ganho_off is not None and ganho_off[1] > 0 and ganho_off[2] > 0, str(ganho_off))
+    checar("progresso offline dá XP e ouro", ganho_off is not None and ganho_off["xp"] > 0 and ganho_off["ouro"] > 0, str(ganho_off))
     checar("vencer Andar 5 inicia volta 2 no Andar 1", (fim.ciclo, fim.andar) == (2, 1), f"volta={fim.ciclo} andar={fim.andar}")
+    checar("Forja: compra aumenta ATQ", comprou and fj.atq > atq0, f"atq {atq0} -> {fj.atq}")
+    checar("tralhas: excesso de poções vira ouro", venda > 0 and fj.inven["Poção de Vida"] == a.LIMITE_ITEM["Poção de Vida"])
+    checar("Altar: compra com fragmentos", altar_ok and fj.altar["ancestral"] == 1)
+    checar("save guarda Forja/Altar/fragmentos/auto-compra",
+           (f2.forja, f2.altar, f2.fragmentos, f2.auto_compra) == (fj.forja, fj.altar, fj.fragmentos, False))
+    checar("telas (idle, menu, status, forja, altar, offline) desenham", telas_ok is True, str(telas_ok))
 
 print("\nRESULTADO:", "OK" if not falhas else f"{len(falhas)} falha(s)")
 sys.exit(1 if falhas else 0)

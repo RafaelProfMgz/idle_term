@@ -17,6 +17,13 @@
 10. **Explorar + Diálogos com Escolhas** (menu 1 mostra a cena do andar atual): Pescador (aceitar ajudar / perguntar da torre), Guardião (mostrar o Manuscrito para passar sem lutar / desafiar), Templo (ler o Manuscrito destrava o Andar 4); Caverna e Abismo têm falas de ambiente
 11. **Causa & Consequência**: flags salvas no `.txt` (`pescador_falado`, `goblin_derrotado`, `crista_pegada`, `portao_aberto`, `manuscrito_lido`, `dragao_derrotado`, `dialogo_positivo_3`); chefes ativam as flags do próximo andar (`CHEFE_FLAGS`)
 12. **Save .txt editável**: `save_idle.txt` / `save_auto_idle.txt` ao lado do `andante.py` — `Chave: valor`, `## Flags` com `- [x]` e `## Inventário` com `- item: qt`
+13. **Forja do Porto** (menu `F`): 6 melhorias pagas com ouro — Lâmina (+8% ATQ e magia), Armadura (+8% DEF), Amuleto (+10% Vida), Moeda da Sorte (+10% ouro), Diário (+6% XP), Botas Ligeiras (+4% de chance de ação extra por passo, máx 15). Custo cresce ~1,3–1,5× por nível. **Auto-compra** no idle (tecla `A` no idle ou `T` na Forja) compra sempre a mais barata.
+14. **Altar dos Fragmentos** (menu `A`, prestígio): cada chefe dá 1 fragmento, o Rei das Sombras dá 3. Bênçãos permanentes: Força Ancestral (+10% ATQ/DEF), Ganância (+20% ouro), Sabedoria (+15% XP), Eco do Andante (+10% offline e +1h). Sem auto-compra: é a decisão do jogador. Saves antigos recebem os fragmentos dos chefes já vencidos.
+15. **Tralhas viram ouro**: limite de 10 poções e 1 de cada crista/manuscrito/chave/troféu; o excesso é vendido sozinho.
+16. **Poder** (menu, idle e tela do chefe): quantas vezes você aguenta mais que o chefe (>1 = deve vencer). Perdeu? O idle treina 30 passos e tenta de novo.
+17. **Texto vivo**: 8 falas por andar (`FALAS_IDLE`), trabalho próprio de cada andar (`TRABALHOS`), 8 encontros raros com recompensa (`ENCONTROS`).
+18. **Interface**: logo em blocos, seções que se ajustam à largura do terminal, barras, números curtos (12,3K · 4,5M), menu em duas colunas com dica do que fazer, painel do idle com torre, "rumo ao chefe", destaque ★ e ouro/XP por minuto.
+19. **`andante --idle`** abre direto no modo idle.
 
 ## Como funciona o Modo Idle (opção 3)
 - **Não para sozinho**: roda até você apertar `Q` (ou `Ctrl+C`). `+` / `-` mudam a velocidade (2s → 0.1s por passo).
@@ -25,15 +32,27 @@
 - **História destrava andares**: no idle, o Pescador (Andar 1) e a leitura do Manuscrito (Andar 4) acontecem sozinhos; os outros andares são destravados pela vitória no chefe anterior (`CHEFE_FLAGS`).
 - **Voltas na torre**: depois do Rei das Sombras (Andar 5) começa a Volta 2 no Porto — inimigos e recompensas ×1.5 por volta, e cada volta pede +4 níveis (`NIVEIS_POR_VOLTA`).
 - **Auto-save** a cada 10 passos e ao sair. **Progresso offline**: ao reabrir, ganha 50% do que renderia com o jogo aberto (`OFFLINE_EFICIENCIA`, máx. 12h).
-- **Ritmo** (padrão de jogos idle, a 1s/passo): nível 2 em 2s, nível 3 em ~15s, nível 5 em ~2,5min; voltas na torre de ~27min, 43min, 1,2h, 1,8h, 2,5h (cada uma ~1,5× mais longa). Ajuste com `RITMO_XP`, `xp_para_nivel()` e `NIVEIS_POR_VOLTA`, e meça com `python3 .claude/skills/andante/scripts/ritmo.py`.
+- **Ritmo** (a 1s/passo, com auto-compra e um jogador que usa o Altar): nível 5 em ~3,5min; voltas na torre de ~20min, 21min, 28min, 32min, 42min; de vez em quando um chefe vence e o idle volta a treinar. Botões de ajuste: `RITMO_XP`, `xp_para_nivel()`, `NIVEIS_POR_VOLTA`, `CHEFE_VIDA/ATQ/POR_VOLTA`, custos da `FORJA`. Meça com `python3 .claude/skills/andante/scripts/ritmo.py`.
+- Teclas no idle: `Q` menu · `+`/`-` velocidade · `A` liga/desliga auto-compra.
 - Linux (termios/select) e Windows (msvcrt) sem instalar nada; cores ANSI ativadas no Windows por `os.system("")`.
+
+## Plano v2 — idle completo + interface nova (2026-10-16)
+Baseado na análise de 1h de idle simulado (130 mil de ouro sem uso, 0 mortes, 477 poções acumuladas, falas repetidas, log dominado por "ouro").
+- [x] **Forja do Porto** (gasto de ouro): Lâmina (+ATQ%), Armadura (+DEF%), Amuleto (+Vida%), Moeda da Sorte (+ouro%), Diário (+XP%), Botas Ligeiras (chance de ação extra por passo); custo cresce a cada nível; auto-compra no idle (liga/desliga)
+- [x] **Tralhas viram ouro**: limite por item (poções 10, cristas/manuscritos/chaves/troféus 1); excesso é vendido sozinho
+- [x] **Altar dos Fragmentos** (prestígio): chefes dão fragmentos (Rei das Sombras dá mais); bônus permanentes escolhidos pelo jogador (sem auto-compra = decisão)
+- [x] **Combate que importa**: chefes mais fortes; indicador de "Poder" (você × chefe); perder faz farmar/comprar e tentar de novo
+- [x] **Texto vivo**: 8 falas por andar, trabalho próprio de cada andar, encontros aleatórios com recompensa
+- [x] **Painel do idle novo**: seções, torre em linha, barra "rumo ao chefe", destaque ★ para eventos grandes, ouro/XP por minuto, números curtos (12,3K)
+- [x] **Menu principal novo**: logo em blocos, cartão do personagem com barras, opções em duas colunas, dica do que fazer
+- [x] **Qualidade de vida**: `andante --idle` abre direto no idle; telas de menu instantâneas (máquina de escrever só na narrativa); resumo offline em quadro
 
 ## Planos futuros (do usuário / sugeridos)
 - [ ] Sistema de guildas / clãs (salvar progresso compartilhado)
 - [ ] Exportar save para JSON (`export_json()`)
-- [ ] Mais passivas (ex: `Invocação Rápida`, `Teleporte Andar`, `Visão Noturna`)
+- [x] Mais passivas (`Invocação Rápida`, `Teleporte Andar`, `Visão Noturna` já existem e têm efeito)
 - [ ] Habilidades de classe únicas (Guerreiro: Ataque Duplo; Mago: Bola de Fogo extra; Arqueiro: Impulso)
-- [ ] Sistema de mercante / loja no Porto (comprar/ vender itens com ouro)
+- [x] Sistema de mercante / loja no Porto — Forja + venda automática de tralhas
 - [ ] Cadernos de notas do jogador (anotações salvas no `.txt`)
 - [x] Modo automático até finalizar todos os andares (loop infinito, com voltas na torre)
 - [ ] Diálogos com NPCs novos (Templo, Abismo)
