@@ -15,7 +15,7 @@ Mapa do arquivo por seção (procure pelos comentários `# ---------- ... ------
 
 ## 3. Modo Idle
 - `LeitorTecla` — context manager; `ler()` devolve a tecla ou `None` sem travar (msvcrt / termios+select)
-- Constantes: `VELOCIDADES`, `AUTO_SALVAR_A_CADA`, `OFFLINE_MAX_MIN`, `RITMO_XP`
+- Constantes: `VELOCIDADES`, `AUTO_SALVAR_A_CADA`, `OFFLINE_MAX_MIN`, `OFFLINE_EFICIENCIA`, `RITMO_XP`, `NIVEIS_POR_VOLTA`; curva de XP em `xp_para_nivel(n)` = 35·n^2,7
 - `EVENTOS_AUTO` — `(tipo, peso, objeto)`: Batalha 0.4, Item 0.2, Ouro 0.2, Diálogo 0.1, Trabalho 0.1
 - `nivel_requerido(j)` = `req_nivel + 10*(ciclo-1)`; `requisitos_ok(j)`
 - `luta_auto(j, vida, atq)` → `(venceu, dano)` — luta sem input, usa Bola de Fogo e poções
@@ -43,7 +43,7 @@ Mapa do arquivo por seção (procure pelos comentários `# ---------- ... ------
 - `aplicar_passivas()` — só efeitos por turno (Regeneração, Invocação Rápida)
 - `dialogo_bom()` — conta conversas positivas (3 → `dialogo_positivo_3`)
 - `usar_magia()` — Bola de Fogo guarda `ultimo_dano` (o combate aplica); Escudo/Impulso só ligam contadores
-- `ganhar_xp(qt, silencioso)` sobe vários níveis de uma vez → `subir_nivel()` (xp_max = 100*nivel, +2 pontos, restaura vida/mana)
+- `ganhar_xp(qt, silencioso)` sobe vários níveis de uma vez → `subir_nivel()` (xp_max = `xp_para_nivel(nivel)`, +2 pontos, restaura vida/mana)
 - `escala()` = 1 + 0.5*(ciclo-1); `aplicar_flags_de_progresso()` marca flags dos chefes já passados
 - `usar_poção()`, `adicionar_item()`, `distribuir_pontos()`
 

@@ -166,16 +166,19 @@ class LeitorTecla:
 
 VELOCIDADES = [2.0, 1.0, 0.5, 0.25, 0.1]   # segundos por tick
 AUTO_SALVAR_A_CADA = 10                    # ticks
-RITMO_XP = 0.12                            # ritmo do idle: 1ª volta ~18 min a 1s/tick, 2ª ~1h
-OFFLINE_MAX_MIN = 8 * 60                   # progresso offline limitado a 8h
+# Ritmo (a 1s/tick): nível 3 ~15s, nível 5 ~2,5min; voltas na torre ~27min, 43min, 1,2h, 1,8h, 2,5h...
+RITMO_XP = 0.6                             # multiplicador do XP ganho no idle
+NIVEIS_POR_VOLTA = 4                       # quantos níveis a mais cada volta na torre exige
+OFFLINE_MAX_MIN = 12 * 60                  # progresso offline limitado a 12h
+OFFLINE_EFICIENCIA = 0.5                   # offline rende 50% do que renderia com o jogo aberto
 
 def barra(atual, maximo, largura=20, cor=GN):
     cheio = int(largura * max(0, min(1, atual / maximo))) if maximo else 0
     return f"{cor}{'█'*cheio}{DIM}{'░'*(largura-cheio)}{RESET}"
 
 def nivel_requerido(jogador):
-    """Nível mínimo do chefe atual; cada volta na torre pede +10 níveis."""
-    return ANDARES[jogador.andar]["req_nivel"] + 10 * (jogador.ciclo - 1)
+    """Nível mínimo do chefe atual; cada volta na torre pede +NIVEIS_POR_VOLTA."""
+    return ANDARES[jogador.andar]["req_nivel"] + NIVEIS_POR_VOLTA * (jogador.ciclo - 1)
 
 def requisitos_ok(jogador):
     flag = ANDARES[jogador.andar].get("req_flag")
@@ -343,9 +346,9 @@ def progresso_offline(jogador, segundos):
     minutos = min(int(segundos // 60), OFFLINE_MAX_MIN)
     if minutos < 1:
         return None
-    # ~30% do que o idle renderia com o jogo aberto
-    xp = int(minutos * 140 * jogador.andar * jogador.escala() * RITMO_XP)
-    ouro = int(minutos * 100 * jogador.andar * jogador.escala())
+    # Média do idle aberto por minuto: ~480 XP e ~360 ouro por andar (60 ticks)
+    xp = int(minutos * 480 * jogador.andar * jogador.escala() * RITMO_XP * OFFLINE_EFICIENCIA)
+    ouro = int(minutos * 360 * jogador.andar * jogador.escala() * OFFLINE_EFICIENCIA)
     nivel_antes = jogador.nivel
     jogador.ouro += ouro
     jogador.ganhar_xp(xp, silencioso=True)
@@ -361,6 +364,11 @@ FEITICOS = {
     "Impulso": {"custo_mana":6,"atq_bonus":8,"duracao":3,"desc":"Ataque +8 por 3 turnos."},
     "Restauração": {"custo_mana":12,"cura":40,"mana_regen":5,"desc":"Cura forte e regenera mana."},
 }
+
+def xp_para_nivel(nivel):
+    """XP necessário para sair deste nível. Curva polinomial típica de idle:
+    níveis iniciais em segundos, depois cada vez mais longos (ver RITMO_XP)."""
+    return int(35 * nivel ** 2.7)
 
 FEITICOS_CLASSE = {
     "Guerreiro": ["Bola de Fogo","Escudo Arcano"],
@@ -392,7 +400,7 @@ class Jogador:
         self.atributos = {"forca":10,"destreza":10,"inteligencia":10,"vitalidade":10,"carisma":10}
         self.pontos_atributo = 0
         self.nivel = 1
-        self.xp = 0; self.xp_max = 100
+        self.xp = 0; self.xp_max = xp_para_nivel(1)
         self.inven = {}
         self.ouro = 0
         self.ciclo = 1  # "volta" na torre: depois do Andar 5 recomeça mais difícil
@@ -516,7 +524,7 @@ class Jogador:
 
     def subir_nivel(self, silencioso=False):
         self.nivel += 1
-        self.xp_max = 100 * self.nivel
+        self.xp_max = xp_para_nivel(self.nivel)
         self.pontos_atributo += 2
         self._recalcular()
         self.vida = self.vida_max; self.mana = self.mana_max  # level up restaura
@@ -1020,7 +1028,7 @@ def ler_save(jogador, caminho):
                 pass  # valor estragado na edição manual: mantém o padrão
     if inven:
         jogador.inven = inven
-    jogador.xp_max = 100 * jogador.nivel
+    jogador.xp_max = xp_para_nivel(jogador.nivel)
     jogador._recalcular()
     jogador._desbloquear_passivas(silencioso=True)
     jogador.aplicar_flags_de_progresso()

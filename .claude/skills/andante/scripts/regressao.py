@@ -107,13 +107,13 @@ def distribuir(f):
 item("distribuir_pontos desbloqueia passiva na hora", distribuir)
 
 def mestre_teleporte(f):
-    j = a.Jogador("x", "Guerreiro", 1); j.passivas = ["Mestre do Andar"]; j.ganhar_xp(40, silencioso=True)
+    j = a.Jogador("x", "Guerreiro", 1); j.passivas = ["Mestre do Andar"]; base = max(1, a.xp_para_nivel(1) // 4); j.ganhar_xp(base, silencioso=True)
     xp_mestre = j.xp
     k = a.Jogador("y", "Guerreiro", 1); k.passivas = ["Teleporte Andar"]; k.flags["pescador_falado"] = True; k.vida = int(k.vida_max * 0.6)
     k.atributos["forca"] = 300; k._recalcular(); k.vida = int(k.vida_max * 0.6)
     res = {"batalhas":0,"chefes":0,"chefes_tentados":0,"itens":0,"ouro_ganho":0,"xp_ganho":0,"eventos":0,"mortes":0,"ticks":0}
     a.tick_idle(k, res, [])
-    return xp_mestre > 40 and res["chefes_tentados"] == 1, f"xp com Mestre={xp_mestre}; Teleporte enfrentou chefe com 60% vida: {res['chefes_tentados']==1}"
+    return xp_mestre > base and res["chefes_tentados"] == 1, f"xp com Mestre={xp_mestre}; Teleporte enfrentou chefe com 60% vida: {res['chefes_tentados']==1}"
 item("Passivas Mestre do Andar / Teleporte Andar têm efeito", mestre_teleporte)
 
 def conquistas(f):

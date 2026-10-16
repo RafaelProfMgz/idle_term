@@ -37,7 +37,7 @@ UltimoAcesso: 1792175855
 - Demais linhas: `Chave: valor`. `Nivel` e `Nível` são aceitos; `Vida: 120/165` também (pega o número antes da `/`).
 - Chave ausente ou valor inválido → mantém o padrão (não quebra o load).
 - `Andar` é limitado a 1–5. `Classe` define os feitiços (`FEITICOS_CLASSE`).
-- Depois de ler: `xp_max = 100*nivel`, `_recalcular()`, `_desbloquear_passivas()`, `aplicar_flags_de_progresso()` (quem está no Andar 3 ganha as flags dos chefes 1 e 2).
+- Depois de ler: `xp_max = xp_para_nivel(nivel)`, `_recalcular()`, `_desbloquear_passivas()`, `aplicar_flags_de_progresso()` (quem está no Andar 3 ganha as flags dos chefes 1 e 2).
 - `UltimoAcesso` (epoch) alimenta o progresso offline ao reabrir o jogo.
 
 ## Ao estender

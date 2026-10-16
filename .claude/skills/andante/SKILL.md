@@ -21,7 +21,7 @@ Andante é um **jogo idle de terminal** em **um único arquivo** (`andante.py`, 
 | Nova passiva | `_desbloquear_passivas()` (condição) + `PASSIVAS_BONUS` (ATQ/DEF fixo) ou `aplicar_passivas()` (efeito por turno) | Verifique se o nome já existe antes de duplicar |
 | Novo feitiço | `FEITICOS` + ramo `elif nome ==` em `usar_magia()` + `feiticos_aprendidos` da classe | Custo de mana deve caber em `mana_max` do nível 1 |
 | Nova flag de causa/consequência | `self.flags` no `__init__` + onde ela vira `True` (`CHEFE_FLAGS` ou `HISTORIA`) + `req_flag` se travar andar | Se travar andar, o idle precisa conseguir ativá-la sozinho |
-| Ritmo do idle | `RITMO_XP`, `stats_chefe()`, `nivel_requerido()`, `Jogador.escala()` | Meça com uma simulação de `tick_idle()` antes/depois |
+| Ritmo do idle | `xp_para_nivel()`, `RITMO_XP`, `NIVEIS_POR_VOLTA`, `OFFLINE_EFICIENCIA`, `stats_chefe()`, `Jogador.escala()` | Meça antes/depois com `scripts/ritmo.py`; meta: nível 5 em ~2-3 min, 1ª volta ~25-30 min, cada volta ~1,5× a anterior |
 | Nova cena/NPC | `CENAS[andar]` + função `dialogo_*` chamada em `cena_explorar()` | Texto/diálogo: siga a skill `narrativa-andante` |
 | Balanceamento | `CLASSES`, `_recalcular()`, `combate()`, `stats_chefe()`, `TITULOS_DEF` |
 | Conquista/título | `CONQUISTAS_DEF` / `TITULOS_DEF` (salvos automaticamente) | Rode a simulação depois (ver abaixo) |

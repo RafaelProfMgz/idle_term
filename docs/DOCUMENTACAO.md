@@ -10,7 +10,7 @@
 3. **Magia D&D**: Mana = 20 + Int×10 + Nível×5 + Andar×3 + bônus da classe; regenera por turno de combate, no idle e ao subir de nível. Feitiços: Bola de Fogo (dano), Cura, Escudo Arcano (+10 DEF por 3 turnos), Impulso (+8 ATQ por 3 turnos), Restauração; no combate (`M`) ou menu (`4`)
 4. **Passivas**: desbloqueadas por nível/atributos (também ao distribuir pontos). Bônus fixos: Ataque Duplo +3 ATQ, Esquiva Rápida +2 DEF, Visão Noturna +1 ATQ, Fortalecimento +5 ATQ. Por turno: Regeneração +5 HP, Invocação Rápida +3 mana. Mestre do Andar: +25% XP. Teleporte Andar: no idle enfrenta o chefe com 50% de vida (em vez de 80%)
 5. **Atributos e classes**: Força, Destreza, Inteligência, Vitalidade, Carisma (+2 pontos por nível; no idle são distribuídos sozinhos pelo foco da classe). Classes: Guerreiro (+vida/ATQ/DEF), Mago (+40 mana, frágil, 2 poções), Arqueiro (equilibrado, +10 ouro)
-6. **Nível + XP**: sem limite de nível; XP para o próximo = 100 × nível; XP sobrando passa para o próximo nível; subir de nível restaura vida e mana
+6. **Nível + XP**: sem limite de nível; XP para o próximo = 35 × nível^2,7 (`xp_para_nivel()`); XP sobrando passa para o próximo nível; subir de nível restaura vida e mana
 7. **Conquistas**: 8 em `CONQUISTAS_DEF` (Primeiro Sangue, Pescador Amigo, Crista Azul, Portão Aberto, Leitor de Manuscritos, Matador de Dragão, Dono do Porto, Diplomata) — dão ouro e XP, ficam salvas para sempre
 8. **Títulos com bônus** (`TITULOS_DEF`): Aventurier, Caçador de Sombras, Guardião do Rei, Matador de Dragões, Lenda do Porto — liberados por conquista + nível; o melhor fica ativo sozinho e soma `+ATQ / +DEF`
 9. **Mapa ASCII**: `desenhar_torre()` — torre vertical com 5 andares, aberto/bloqueado, chefe derrotado/pendente, posição do jogador
@@ -23,9 +23,9 @@
 - Cada passo: regenera vida/mana, distribui pontos de atributo pela classe, e sorteia um evento (batalha, item, ouro, fala do andar, trabalho).
 - **Chefe automático**: quando nível e flag do andar batem e a vida está ≥ 80%, luta sozinho. Perdeu → recua e treina mais.
 - **História destrava andares**: no idle, o Pescador (Andar 1) e a leitura do Manuscrito (Andar 4) acontecem sozinhos; os outros andares são destravados pela vitória no chefe anterior (`CHEFE_FLAGS`).
-- **Voltas na torre**: depois do Rei das Sombras (Andar 5) começa a Volta 2 no Porto — inimigos e recompensas ×1.5 por volta, e cada volta pede +10 níveis.
-- **Auto-save** a cada 10 passos e ao sair. **Progresso offline**: ao reabrir, ganha ~30% do que renderia com o jogo aberto (máx. 8h).
-- Ritmo: `RITMO_XP = 0.12` → 1ª volta ~15 min, 2ª ~50 min a 1s/passo. Ajuste essa constante para acelerar/desacelerar.
+- **Voltas na torre**: depois do Rei das Sombras (Andar 5) começa a Volta 2 no Porto — inimigos e recompensas ×1.5 por volta, e cada volta pede +4 níveis (`NIVEIS_POR_VOLTA`).
+- **Auto-save** a cada 10 passos e ao sair. **Progresso offline**: ao reabrir, ganha 50% do que renderia com o jogo aberto (`OFFLINE_EFICIENCIA`, máx. 12h).
+- **Ritmo** (padrão de jogos idle, a 1s/passo): nível 2 em 2s, nível 3 em ~15s, nível 5 em ~2,5min; voltas na torre de ~27min, 43min, 1,2h, 1,8h, 2,5h (cada uma ~1,5× mais longa). Ajuste com `RITMO_XP`, `xp_para_nivel()` e `NIVEIS_POR_VOLTA`, e meça com `python3 .claude/skills/andante/scripts/ritmo.py`.
 - Linux (termios/select) e Windows (msvcrt) sem instalar nada; cores ANSI ativadas no Windows por `os.system("")`.
 
 ## Planos futuros (do usuário / sugeridos)
