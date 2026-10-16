@@ -2,7 +2,7 @@
 
 ## Diálogo com escolha (modelo)
 
-Siga o estilo de `cena_porto()`: `digitar()` para fala/narração, `print()` para opções, `input().strip()` para a escolha, flag checada para não repetir recompensa.
+Siga o estilo de `dialogo_guardiao()` / `dialogo_pescador()` (chamados por `cena_explorar()`): `digitar()` para fala/narração, `print()` para opções, `input().strip()` para a escolha, flag checada para não repetir recompensa.
 
 ```python
 def dialogo_guardiao(jogador):
@@ -37,15 +37,16 @@ def dialogo_guardiao(jogador):
 - [ ] Linhas ≤ ~70 colunas
 - [ ] Recompensa protegida por flag (não dá para farmar repetindo o diálogo)
 - [ ] Flag nova adicionada em `self.flags` no `Jogador.__init__`
-- [ ] Cena ligada a um menu (`cena_porto`, `menu()` ou nova cena)
+- [ ] Diálogo ligado a `cena_explorar()` (por andar) e descrição em `CENAS`
+- [ ] Escolha positiva chama `jogador.dialogo_bom()` (conta para a conquista Diplomata)
 - [ ] Se a flag destrava andar, conferir `ANDARES[n]["req_flag"]`
-- [ ] Evento para o Auto Play? Adicionar tupla em `EVENTOS_AUTO` e ramo em `auto_play()`
+- [ ] Precisa acontecer no modo idle também? Flag que trava andar → `HISTORIA` (o idle ativa sozinho); fala de ambiente → `FALAS_IDLE[andar]`
 - [ ] Rodar `python3 .claude/skills/andante/scripts/smoke_test.py`
 - [ ] Registrar lore aprovada em `references/lore.md`
 
-## Eventos curtos do Auto Play
+## Eventos curtos do modo idle
 
-O Auto Play mostra uma linha por evento. Escreva variações em lista e sorteie com `random.choice`, para o idle não ficar repetitivo:
+O modo idle mostra uma linha por evento (painel com os 8 últimos). Escreva variações em lista e sorteie com `random.choice`, para o idle não ficar repetitivo:
 
 ```python
 FALAS_PORTO = [

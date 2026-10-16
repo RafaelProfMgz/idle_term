@@ -1,0 +1,7 @@
+# Cache do Python
+__pycache__/
+*.pyc
+
+# Saves do jogador (progresso pessoal, gerado pelo jogo)
+save_idle.txt
+save_auto_idle.txt
