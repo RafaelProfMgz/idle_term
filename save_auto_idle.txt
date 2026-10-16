@@ -1,0 +1,11 @@
+# Auto Save RPG Idle
+Nome:Hermes
+Classe:Guerreiro
+Idade:30
+Andar:1
+Nivel:1
+XP:0
+Vida:120
+Ouro:0
+Mana:125
+Passivas:
