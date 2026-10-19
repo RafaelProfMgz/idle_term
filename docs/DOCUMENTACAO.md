@@ -47,6 +47,16 @@ Baseado na análise de 1h de idle simulado (130 mil de ouro sem uso, 0 mortes, 4
 - [x] **Menu principal novo**: logo em blocos, cartão do personagem com barras, opções em duas colunas, dica do que fazer
 - [x] **Qualidade de vida**: `andante --idle` abre direto no idle; telas de menu instantâneas (máquina de escrever só na narrativa); resumo offline em quadro
 
+## Versão gráfica em Pyxel — protótipo (2026-10-19)
+O usuário pediu "uma biblioteca visual bonita, com sprites, que pareça um joguinho leve de verdade". Escolhemos o Pyxel (motor retrô; também roda no navegador, para um dia ir ao site).
+- [x] `andante_gui.py`: janela 320×240 (escala 3); o `andante.py` é o motor (o `tick_idle` roda no ritmo da velocidade escolhida)
+- [x] Cenário próprio de cada andar (cais e mar, muralha com estandartes, caverna com lava, templo com velas, abismo com estrelas e névoa)
+- [x] Sprites: Guerreiro, Mago, Arqueiro, um monstro por andar, chefe (o monstro do andar com outras cores, em tamanho maior), baú, companheiros do grupo (cor do elemento)
+- [x] Animações a partir do que o idle fez: avanço e golpe, inimigo piscando, partículas, "+XP / +ouro" subindo, baú com o rank do item, "NOVO NÍVEL", transição de andar, escolhas de missão com [1]/[2]
+- [x] HUD (vida, XP, ouro, volta, torre em miniatura, chefe, Poder), barra "rumo ao chefe", contrato, log colorido
+- [x] Lê o mesmo save e aplica o progresso offline; salva a cada 10 s e ao sair ([Q]/[ESC])
+- [ ] Ainda não: menus (Forja, Habilidades, Sino...), sons, levar ao site (`pyxel package` + `pyxel app2html`)
+
 ## Interface para 80×24 (2026-10-19)
 O usuário achou a interface "impossível de usar". Com o terminal dele (80×24), o menu tinha 30 linhas, o idle 25 (e as linhas do log passavam de 80 colunas, então a tela rolava e piscava a cada redesenho), Habilidades 40 e Status 49.
 - [x] Toda tela cabe na altura do terminal (`altura_tela()`); linhas longas são cortadas com `cortar()` (conta emoji como 2 colunas), nunca quebram

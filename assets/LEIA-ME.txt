@@ -1,0 +1,2 @@
+PixelMplus10-Regular.ttf — fonte pixel usada pela versão gráfica (andante_gui.py).
+Copiada dos exemplos do Pyxel. Licença M+ FONT LICENSE: uso, modificação e redistribuição livres.

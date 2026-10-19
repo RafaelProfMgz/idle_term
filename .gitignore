@@ -5,3 +5,6 @@ __pycache__/
 # Saves do jogador (progresso pessoal, gerado pelo jogo)
 save_idle.txt
 save_auto_idle.txt
+
+# Ambiente virtual da versão gráfica (pyxel)
+.venv/

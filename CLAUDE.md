@@ -7,6 +7,7 @@ Andante (andante.py)
 - `andante.py` (jogo completo)
 - `save_idle.txt` (save manual editável)
 - `save_auto_idle.txt` (auto-save)
+- `andante_gui.py` (versão gráfica em Pyxel, opcional)
 - `CLAUDE.md` (este arquivo)
 - `docs/DOCUMENTACAO.md` (histórico + planos + problemas conhecidos)
 - `docs/SKILLS_TERMINAL_PY.md` (dicas de terminal/python)
@@ -16,6 +17,16 @@ Andante (andante.py)
 python3 andante.py
 # Windows: python andante.py
 ```
+
+## Versão gráfica (protótipo, Pyxel)
+```bash
+python3 -m venv .venv && .venv/bin/pip install pyxel   # uma vez
+.venv/bin/python andante_gui.py
+```
+- `andante_gui.py` importa o `andante.py` como motor e só desenha (mesmo personagem, idle e save)
+- Sprites 16×16 escritos no próprio arquivo (`SPRITES`, uma letra por cor em `COR`); fonte pixel em `assets/`
+- A versão de terminal continua só com biblioteca padrão; o Pyxel é opcional
+- Não rode as duas versões ao mesmo tempo: as duas gravam o `save_auto_idle.txt`
 
 ## Sistema de save (.txt Markdown estilo GitHub)
 - Editar diretamente: trocar `[ ]` por `[x]` nas flags (`pescador_falado`, `portao_aberto`, etc.)
