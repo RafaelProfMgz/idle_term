@@ -3,12 +3,13 @@
 
 Uso (da raiz do projeto):  python3 .claude/skills/andante/scripts/regressao.py
 Roda em pasta temporária, sem tocar nos saves. Sai com código 1 se algo voltar a quebrar."""
-import importlib.util, os, sys, io, time, builtins, random, tempfile
+import importlib.util, os, sys, io, time, builtins, random, tempfile, re
 time.sleep = lambda *_: None
 ALVO = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "andante.py"))
 os.chdir(tempfile.mkdtemp())
 spec = importlib.util.spec_from_file_location("a", ALVO); a = importlib.util.module_from_spec(spec)
 real = sys.stdout; sys.stdout = io.StringIO(); spec.loader.exec_module(a)
+a.TECLA_UNICA = False   # menus de uma tecla: nos testes, usa input()
 a.limpar = lambda: None; a.pausa = lambda *x, **k: None
 a.SAVE_MANUAL = os.path.abspath("m.txt"); a.SAVE_AUTO = os.path.abspath("au.txt")
 random.seed(3)
@@ -74,11 +75,13 @@ item("Monstro da Floresta não sobe de andar", goblin)
 
 def fogo(f):
     j = a.Jogador("x", "Mago", 1); buf = io.StringIO(); sys.stdout = buf
-    f += ["M", "Bola de Fogo", "F"]
+    f += ["M", "1", "F"]          # [M]agia → feitiço 1 (Bola de Fogo) → [F]ugir
     try: a.combate(j, "Alvo", 500, 1)
+    except EOFError: pass
     finally: sys.stdout = io.StringIO()
-    hp = [l for l in buf.getvalue().splitlines() if "Inimigo:" in l]
-    return len(hp) >= 2 and hp[0] != hp[1].replace(f"Mana: {j.mana}", "x") and "500 HP" not in hp[1], " | ".join(hp)
+    hp = [re.search(r"(\d+)/500", a.visivel(l)).group(1) for l in buf.getvalue().splitlines()
+          if a.visivel(l).startswith(" Alvo") and "/500" in l]
+    return len(hp) >= 2 and int(hp[1]) < 500, " | ".join(hp)
 item("Bola de Fogo tira vida do inimigo", fogo)
 
 def buffs(f):
@@ -123,9 +126,9 @@ def conquistas(f):
     a.auto_play(j, passos=4000, velocidade=0, desenhar=False)
     feitas = [c for c, v in j.conquistas.items() if v]
     a.gravar_save(j, a.SAVE_AUTO, "t"); k = a.Jogador("y", "Guerreiro", 1); a.ler_save(k, a.SAVE_AUTO)
-    return len(a.CONQUISTAS_DEF) == 8 and len(feitas) >= 5 and k.conquistas == j.conquistas and k.titulo_ativo == j.titulo_ativo, \
-        f"{len(feitas)}/8 conquistas, título '{j.titulo_ativo}', save ok={k.conquistas == j.conquistas}"
-item("Conquistas (8) e títulos com bônus existem e são salvos", conquistas)
+    return len(a.CONQUISTAS_DEF) >= 8 and len(feitas) >= 5 and k.conquistas == j.conquistas and k.titulo_ativo == j.titulo_ativo, \
+        f"{len(feitas)}/{len(a.CONQUISTAS_DEF)} conquistas, título '{j.titulo_ativo}', save ok={k.conquistas == j.conquistas}"
+item("Conquistas (8+) e títulos com bônus existem e são salvos", conquistas)
 
 def explorar(f):
     exp = getattr(a, "cena_explorar", None)

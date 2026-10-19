@@ -47,7 +47,18 @@ Baseado na análise de 1h de idle simulado (130 mil de ouro sem uso, 0 mortes, 4
 - [x] **Menu principal novo**: logo em blocos, cartão do personagem com barras, opções em duas colunas, dica do que fazer
 - [x] **Qualidade de vida**: `andante --idle` abre direto no idle; telas de menu instantâneas (máquina de escrever só na narrativa); resumo offline em quadro
 
+## Interface para 80×24 (2026-10-19)
+O usuário achou a interface "impossível de usar". Com o terminal dele (80×24), o menu tinha 30 linhas, o idle 25 (e as linhas do log passavam de 80 colunas, então a tela rolava e piscava a cada redesenho), Habilidades 40 e Status 49.
+- [x] Toda tela cabe na altura do terminal (`altura_tela()`); linhas longas são cortadas com `cortar()` (conta emoji como 2 colunas), nunca quebram
+- [x] Menus de **uma tecla** (`ler_tecla()`: sem ENTER, ESC = voltar, setas = W/A/S/D; Windows via msvcrt); `TECLA_UNICA = False` volta ao `input()`
+- [x] Menu principal com 18-22 linhas: **ENTER inicia o idle**; opções em 4 colunas; sistemas trancados numa linha "Em breve"; "Novidades" dentro do menu (sem pausas de ENTER)
+- [x] Painel do idle se adapta à altura (o log usa o que sobra), cursor escondido, redesenho sem limpar a tela (`\033[K`)
+- [x] Habilidades em abas por ramo (nós `a`-`h`), Grupo com ficha por companheiro, item de equipamento em tela própria, Status/Recordes/Diário/Missões paginados (`paginar()`)
+- [x] Combate: uma tecla por turno (sem ENTER extra), barras de vida e o resultado do último turno na tela
+- [x] Indicador de Poder conta habilidades ativas, grupo, lentidão, esquiva e efeitos contra chefe (antes mostrava 0,7× em luta que vencia 40/40)
+
 ## Planos futuros (do usuário / sugeridos)
+- [~] **Expansão v3** (2026-10-19) — fases 0-3 prontas; faltam 4 (mapa/dungeons) e 5 (torres/passe), ver seção 15 do `docs/PLANEJAMENTO.md` — loot com ranks, missões, gacha de companheiros com lore, árvores de habilidade, faixas de nível, dungeons, torres novas, mapa aberto e desbloqueio gradual. Plano completo em `docs/PLANEJAMENTO.md`
 - [ ] Sistema de guildas / clãs (salvar progresso compartilhado)
 - [ ] Exportar save para JSON (`export_json()`)
 - [x] Mais passivas (`Invocação Rápida`, `Teleporte Andar`, `Visão Noturna` já existem e têm efeito)

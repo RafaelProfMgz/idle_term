@@ -25,7 +25,7 @@ Andante é um **jogo idle de terminal** em **um único arquivo** (`andante.py`, 
 | Nova cena/NPC | `CENAS[andar]` + função `dialogo_*` chamada em `cena_explorar()` | Texto/diálogo: siga a skill `narrativa-andante` |
 | Balanceamento | `CLASSES`, `_recalcular()`, `CHEFE_VIDA/ATQ/POR_VOLTA`, `MONSTRO_*`, `FORJA` (custos), `ALTAR`, `TITULOS_DEF` | Rode `scripts/ritmo.py`: as 3 classes devem ter voltas parecidas e poucas derrotas para chefe (sem muralha) |
 | Nova melhoria de Forja/Altar | entrada em `FORJA`/`ALTAR` + efeito em `_recalcular()` / `mult_ouro()` / `mult_xp()` / `mult_dano()` | Salva sozinho (`Forja:`/`Altar:` no save) |
-| Tela/menu | `secao()`, `colunas()`, `barra()`, `fmt_num()`; nada de emoji dentro de `colunas()` | Telas de menu usam `print` (instantâneo); `digitar()` só para narrativa |
+| Tela/menu | `secao()`, `menu_opcoes()`, `barra()`, `fmt_num()`, `cortar()`, `quebrar()`, `paginar()`, `ler_tecla()`; nada de emoji dentro de colunas | **Toda tela cabe em 80×24** (`altura_tela()`): linha longa passa por `cortar()`, lista longa por `paginar()`. Menus usam `ler_tecla()` (uma tecla, sem ENTER; ESC = `0`). `print` para menus, `digitar()` só para narrativa |
 | Conquista/título | `CONQUISTAS_DEF` / `TITULOS_DEF` (salvos automaticamente) | Rode a simulação depois (ver abaixo) |
 
 ## Regras do projeto (e por quê)
@@ -47,7 +47,7 @@ python3 .claude/skills/andante/scripts/smoke_test.py  # cria personagens, roda o
 python3 .claude/skills/andante/scripts/regressao.py  # um teste por bug já corrigido (docs/DOCUMENTACAO.md)
 ```
 
-O `smoke_test.py` roda em pasta temporária (não toca nos saves do usuário) e desliga as animações. Se você criou um sistema novo, acrescente uma checagem no smoke test; se corrigiu um bug, acrescente um item no `regressao.py` e marque `[x]` no `docs/DOCUMENTACAO.md`.
+Os scripts de teste fazem `a.TECLA_UNICA = False` (menus de uma tecla caem no `input()`); faça o mesmo em qualquer script novo. O `smoke_test.py` roda em pasta temporária (não toca nos saves do usuário) e desliga as animações. Se você criou um sistema novo, acrescente uma checagem no smoke test; se corrigiu um bug, acrescente um item no `regressao.py` e marque `[x]` no `docs/DOCUMENTACAO.md`.
 
 ## Documentação
 
