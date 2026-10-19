@@ -30,6 +30,7 @@ saida_real = sys.stdout
 sys.stdout = open(os.devnull, "w", encoding="utf-8")
 try:
     spec.loader.exec_module(a)
+    a.TECLA_UNICA = False   # menus de uma tecla: nos testes, usa input()
     a.digitar = lambda *args, **kw: None
     a.limpar = lambda: None
     a.pausa = lambda *args, **kw: None
